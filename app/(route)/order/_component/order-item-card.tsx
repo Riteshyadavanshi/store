@@ -12,7 +12,7 @@ interface OrderItemCardProps{
       
 }
 export const  OrderItemCard = ({order }:OrderItemCardProps) => {
-    const {id,total,items,status,name,updatedAt}=order
+    const {id,total,items,status,name,updatedAt,paymentType}=order
       
   return (
      <>
@@ -31,6 +31,7 @@ export const  OrderItemCard = ({order }:OrderItemCardProps) => {
                 <h1>{name}</h1>
                 <h1 className="text-green-500">{priceFormater.format(total)}</h1>
                 <h1 className={cn("text-green",status=="canceled"&&"text-destructive")}>{`${status} on ${format(updatedAt, "MMMM dd ,yyyy")}`}</h1>
+                <h1 className={cn("text-green",status=="canceled"&&"text-destructive")}>{paymentType=="cod"?"cash on delivery":"online"}</h1>
               </div>
               <div>
                 <div className='flex  lg:flex-col lg:gap-y-2 justify-between  '>
