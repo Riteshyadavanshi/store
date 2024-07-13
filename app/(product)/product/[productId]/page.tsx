@@ -80,7 +80,7 @@ export default async function ProductPage(
         </div>
         <div className="mt-10 flex flex-col gap-y-2">
           <h1 className="text-xl font-semibold lg:text-3xl flex items-center">
-            Semiliar Products
+            Similiar Products
             <ArrowRight />
           </h1>
           <Suspense fallback={<Loader/>}>

@@ -30,6 +30,7 @@ const Navbar = async () => {
       subCategory: true,
     },
   });
+  const cateogaries=cateogries.filter(cat=>cat.subCategory.length>0)
   return (
     <>
       <nav
@@ -52,7 +53,7 @@ const Navbar = async () => {
             </Link>
           </div>
           <div className="  flex-1  ">
-            <CateogryMenu cateogaries={cateogries} />
+            <CateogryMenu cateogaries={cateogaries} />
           </div>
           <div className="lg:flex-1 lg:flex items-center hidden  ">
             <Search />

@@ -1,4 +1,5 @@
 "use client";
+import { codOrder } from "@/action/order";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,9 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useCart } from "@/hooks/use-cart";
 import { orderSchema } from "@/schemas/order";
 import { zodResolver } from "@hookform/resolvers/zod";
+ 
 import { Loader2 } from "lucide-react";
 import Script from "next/script";
 import { useState } from "react";
@@ -27,16 +30,17 @@ import toast from "react-hot-toast";
 import * as z from "zod";
 
 export const OrderForm = () => {
-  const [isPending,setIsPending]=useState(false)
-  const [isOpen,setIsOpen]=useState(false)
+  const [isPending, setIsPending] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof orderSchema>>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       name: "",
       address: "",
       mobileNumber: "",
-      pinCode:"",
-      email:""
+      pinCode: "",
+      email: "",
+      paymentType: "online",
     },
   });
   const cart = useCart();
@@ -44,63 +48,80 @@ export const OrderForm = () => {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const onSubmit = async (values:z.infer<typeof orderSchema>) => {
+  const cartItems= cart.items.map((product) => ({
+    productId: product.id,
+    quantity: product.quantity,
+  }))
+  const onSubmit = async (values: z.infer<typeof orderSchema>) => {
     try {
-      setIsPending(true)
-       const validateValues=orderSchema.parseAsync(values)
-       if(!validateValues){
-          throw new Error("invalid data entered")
-       }
-       const {name,mobileNumber,address,pinCode,email}=values
-      const res = await fetch("/api/payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-           name ,
-           mobileNumber,
-           address,
-           pinCode,
-           total,
-           email ,
-           cartItems: cart.items.map((product) =>({productId:product.id,quantity:product.quantity})),
-        }),
-      });
+      setIsPending(true);
+      const validateValues = orderSchema.parseAsync(values);
+      if (!validateValues) {
+        throw new Error("invalid data entered");
+      }
+      const { name, mobileNumber, address, pinCode, email, paymentType } =
+        values;
+      if (paymentType == "online") {
+        const res = await fetch("/api/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            mobileNumber,
+            address,
+            pinCode,
+            total,
+            email,
+            cartItems 
+          }),
+        });
 
-      const order = await res.json();
-   
-      const options = {
-        key:process.env.RAZORPAY_KEY_ID,
-        amount: order.amount,
-        name,
-        description: "payment",
-        order_id: order.id,
+        const order = await res.json();
 
-        prifill: {
+        const options = {
+          key: process.env.RAZORPAY_KEY_ID,
+          amount: order.amount,
           name,
-          email,
-        },
-      };
-      cart.removeAll();
-      const razorpay = new (window as any).Razorpay(options);
-      razorpay.open();
+          description: "payment",
+          order_id: order.id,
+
+          prifill: {
+            name,
+            email,
+          },
+        };
+        cart.removeAll();
+        const razorpay = new (window as any).Razorpay(options);
+        razorpay.open();
+      } else {
+        const cartItems= cart.items.map((product) => ({
+          productId: product.id,
+          quantity: product.quantity,
+        }))
+         await codOrder(values,cartItems,total).then(data=>{
+             cart.removeAll()
+             toast.success("order placed")
+         })
+
+      }
     } catch (err) {
-       toast.error("something went wrong")
-    }finally{
-      setIsPending(false)
-      setIsOpen(false)
+      toast.error("something went wrong");
+    } finally {
+      setIsPending(false);
+      setIsOpen(false);
     }
   };
+  
   return (
     <>
-      <Dialog open={isOpen}>
+      <Dialog open={isOpen}  >
         <DialogTrigger className="mt-6" asChild>
           <Button
             disabled={!cart.items.length}
             className="w-full"
-            onClick={()=>setIsOpen(true)}
-
+            onClick={() => setIsOpen(true)}
           >
             Checkout
           </Button>
@@ -146,12 +167,12 @@ export const OrderForm = () => {
                     </>
                   )}
                 />
-                
+
                 <FormField
                   name="mobileNumber"
                   control={form.control}
                   disabled={isPending}
-                  render={({field}) => {
+                  render={({ field }) => {
                     return (
                       <FormItem>
                         <FormControl>
@@ -166,7 +187,7 @@ export const OrderForm = () => {
                     );
                   }}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="address"
@@ -197,9 +218,49 @@ export const OrderForm = () => {
                     </>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="paymentType"
+                  disabled={isPending}
+                  render={({ field }) => (
+                    <>
+                      <FormItem>
+                        <FormControl  >
+                        
+                             <div  className="space-y-2">
+                               <div >
+                                
+                                 <Label  htmlFor="cod" className="flex w-full border border-mutedforeground p-4 justify-between rounded-sm    ">
+                                  <span>cash on delivery </span>
+                                    <Input id="cod" type="radio" className="text-3xl p-3 w-6 h-6   " {...field}  value={"cod"}/> 
+                                    </Label>
+                                </div>
+                                <div>
+                                 <Label  htmlFor="online" className="flex w-full border border-mutedforeground p-4 justify-between rounded-sm    ">
+                                  <span>online </span>
+                                    <Input id="online" type="radio" className="text-3xl p-3 w-6 h-6   " {...field}  value={"online"}  defaultChecked/> 
+                                    </Label>
+                               </div>
+                                
+                                
+                               
+                             </div>
+
+                
+                         
+                       
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </>
+                  )}
+                />
                 <div className="w-full flex justify-end">
                   <Button type="submit" size={"lg"} disabled={isPending}>
-                  { isPending&&<Loader2 className="animate-spin w-4 h-4 mr-2"/>}procced to  Pay
+                    {isPending && (
+                      <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                    )}
+                    place order
                   </Button>
                 </div>
               </form>
@@ -207,7 +268,7 @@ export const OrderForm = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js"/>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </>
   );
 };

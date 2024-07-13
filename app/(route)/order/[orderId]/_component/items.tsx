@@ -23,8 +23,7 @@ export const OrderItem = ({item}:OrderItemProps) => {
     <div className=" flex gap-x-3 text-muted-foreground">
     <h1>total:{item.quantity*item.product.price}</h1>
      
-    <h1>color:sm</h1>
-    <h1>size:blue</h1>
+     
   </div>
   </div>
   

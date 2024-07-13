@@ -10,7 +10,7 @@ const CartLayout = ({children}:CartLayoutProps) => {
   return (
     <>
      
-    <div  > {children}</div>
+    <div className='min-h-screen'> {children}</div>
  </> )
 }
 

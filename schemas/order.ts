@@ -18,5 +18,8 @@ export const orderSchema=z.object({
     }) ,
     pinCode:z.string().min(1,{
         message:"pin code required"
+    }),
+    paymentType:z.string().min(1,{
+        message:"payment type is required"
     })   
 })

@@ -9,7 +9,7 @@ export const getOtp = async (mobile: string) => {
     const { data, error } = await supabase.auth.signInWithOtp({
       phone: `+91${mobile}`,
     });
-    console.log(error)
+   
     if (error) throw new Error("something went wrong ");
 
     return data;

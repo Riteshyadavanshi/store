@@ -14,12 +14,12 @@ import { Banner } from "@/components/Navbar/banner";
  })
 
 export const metadata: Metadata = {
-  metadataBase:new URL("https://store-git-master-riteshyadavanshi.vercel.app/"),
+  metadataBase:new URL("https://shopholicdiaries.com/"),
   title: "Shopholic Diaries",
   description: "one stop shop ecommerce shopping ",
   keywords:["shopholic Diaries ","online shoping","one stop shop","ecommerce"],
   openGraph:{
-    images:[{url:"https://store-git-master-riteshyadavanshi.vercel.app/logo.jpg"}]
+    images:[{url:"https://shopholicdiaries.com/logo.jpg"}]
   }
 };
 

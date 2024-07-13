@@ -76,6 +76,7 @@ model Order {
   total        Int 
   user          User  @relation(fields: [userId],references: [id],onDelete:Cascade)
   items     OrderItem[]
+  paymentType  String    @default("online")
   isPaid    Boolean     @default(false)
   status    String      @default("order placed")
   createdAt DateTime    @default(now())

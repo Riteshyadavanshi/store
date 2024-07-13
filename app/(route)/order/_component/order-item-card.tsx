@@ -40,7 +40,7 @@ export const  OrderItemCard = ({order }:OrderItemCardProps) => {
                 >
                   <Button  variant={"outline"}size={"sm"}>view details</Button>
                 </Link>
-                 { (status!="canceled"&&status!="deleverd") &&<CancelOrderBtn orderId={id}/>}
+                 { (status=="order placed") &&<CancelOrderBtn orderId={id}/>}
                 </div>
               </div>
             </div>

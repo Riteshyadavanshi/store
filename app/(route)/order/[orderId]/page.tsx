@@ -40,7 +40,7 @@ const OrderDetails = async ({ params: { orderId } }: OrderDetailsProps) => {
    if(!order){
    return notFound()
    }
-  
+ 
   return (
     <>
       <div className={cn("min-h-screen w-screen lg:p-10 p-2  space-y-2  ")}>
@@ -57,7 +57,7 @@ const OrderDetails = async ({ params: { orderId } }: OrderDetailsProps) => {
         
       </div>
       <div className=" lg:mx-[300px]">
-           <OrderSummary total={order.total} subTotal={23} shipping={2} tax={18} />
+           <OrderSummary total={order.total} subTotal={order.total} shipping={0} tax={0} />
            <Address address={order.address} pinCode={order.pinCode}/>
         </div>
     </div>

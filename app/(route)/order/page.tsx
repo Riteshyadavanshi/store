@@ -14,7 +14,7 @@ const getOrders = cache(async (id: string) => {
   return await prisma.order.findMany({
     where: {
       userId: id,
-      isPaid:true,
+       OR:[{isPaid:true},{paymentType:"cod"}]
     },
      orderBy:{
       createdAt:"desc"

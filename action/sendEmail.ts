@@ -6,19 +6,21 @@ import { MailOptions } from "nodemailer/lib/sendmail-transport"
 import * as z from "zod"
 
 export const sendEmail=async(values:z.infer<typeof emailSchema>)=>{
- const connect=nodemailer.createTransport({
-     port:23232,
-     host:"",
+ const transport=nodemailer.createTransport({
+      service:"gmail",
      auth:{
         user:"",
         pass:""
      }
  })
  const option:MailOptions={
+   
     from:"",
     to:"",
     html:""
  }
+
+ 
  
   
 
